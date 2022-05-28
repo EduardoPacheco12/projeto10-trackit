@@ -1,23 +1,52 @@
-import styled from "styled-components";
-import { Link } from 'react-router-dom'
+import styled from 'styled-components'
+import axios from 'axios'
+import { useState, useContext } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import UserContext from '../Context/UserContext'
 import logo from '../img/logo.png'
 
 export default function LoginScreen() {
+    //LOGIC
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const {setToken, setImageLogin} = useContext(UserContext)
+    const navigate = useNavigate();
+
+    function FinishLogin(e) {
+        e.preventDefault();
+        const body = {
+            email,
+            password
+        }
+        const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login", body)
+        promise.then( response => {
+            setToken(response.data.token)
+            setImageLogin(response.data.image)
+            navigate("/hoje")
+        })
+        promise.catch(() => {
+            alert("Não foi possível fazer o login, tente novamente.")
+            setEmail("")
+            setPassword("")
+        })
+    }
+
+    //UI
     return(
         <All>
-        <Logo>
-            <img src={logo} alt="Logo da TrackIt" />
-            <h1>TrackIt</h1>
-        </Logo>
-        <Forms>
-            <input type="email" placeholder="email" required/>
-            <input type="password" placeholder="senha" required/>
-            <button type="submit">Cadastrar</button>
-        </Forms>
-        <Link to="/cadastro">
-            <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
-        </Link>
-    </All>
+            <Logo>
+                <img src={logo} alt="Logo da TrackIt" />
+                <h1>TrackIt</h1>
+            </Logo>
+            <Forms onSubmit={FinishLogin}>
+                <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                <button type="submit">Entrar</button>
+            </Forms>
+            <Click to="/cadastro">
+                <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
+            </Click>
+        </All>
     );
 }
 
@@ -101,4 +130,8 @@ const BackRegister = styled.p `
     &:hover {
             cursor: pointer;
     }
+`;
+
+const Click = styled(Link) `
+    text-decoration: none;
 `;

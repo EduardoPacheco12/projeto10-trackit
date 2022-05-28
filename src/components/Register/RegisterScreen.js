@@ -1,24 +1,54 @@
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import axios from 'axios'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import logo from '../img/logo.png'
 
 export default function RegisterScreen() {
+    const [email, setEmail] = useState("")
+    const [password, setPassword] = useState("")
+    const [name, setName] = useState("")
+    const [image, setImage] = useState("")
+    const navigate = useNavigate();
+
+    function FinishRegister(e) {
+        e.preventDefault();
+        const body = {
+            email,
+            name,
+            image,
+            password
+        }
+        const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up", body)
+
+        promise.then( () => {
+            navigate("/")
+        })
+        promise.catch( () => {
+            alert("Esses dados já foram utilizados para cadastro")
+            setEmail("")
+            setPassword("")
+            setName("")
+            setImage("")
+        })
+    }
+
     return (
         <All>
             <Logo>
                 <img src={logo} alt="Logo da TrackIt" />
                 <h1>TrackIt</h1>
             </Logo>
-            <Forms>
-                <input type="email" placeholder="email" required/>
-                <input type="password" placeholder="senha" required/>
-                <input type="text" placeholder="nome" required/>
-                <input type="url" placeholder="foto" required/>
+            <Forms onSubmit={FinishRegister}>
+                <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                <input type="text" placeholder="nome" onChange={(e) => setName(e.target.value)} value={name} required/>
+                <input type="url" placeholder="foto" onChange={(e) => setImage(e.target.value)} value={image} required/>
                 <button type="submit">Cadastrar</button>
             </Forms>
-            <Link to="/">
+            <Click to="/">
                 <BackLogin>Já tem uma conta? Faça login!</BackLogin>
-            </Link>
+            </Click>
         </All>
     )
 }
@@ -103,4 +133,8 @@ const BackLogin = styled.p `
     &:hover {
             cursor: pointer;
     }
+`;
+
+const Click = styled(Link) `
+    text-decoration: none;
 `;
