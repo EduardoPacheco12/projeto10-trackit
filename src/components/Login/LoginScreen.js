@@ -50,6 +50,7 @@ export default function LoginScreen() {
     );
 }
 
+//STYLE
 const All = styled.div `
     display: flex;
     justify-content: center;

@@ -1,14 +1,17 @@
 import styled, { createGlobalStyle } from 'styled-components';
 import axios from 'axios'
+import { CircularProgressbar, buildStyles} from "react-circular-progressbar";
 import { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import UserContext from '../Context/UserContext'
-import dayjs from 'dayjs/locale/pt-br'
+import DailyTask from './DailyTask'
 
 export default function TodayScreen() {
+    //LOGIC
     const [tasksToday, setTasksToday] = useState([])
-    const {token, setToken, imageLogin} = useContext(UserContext)
+    const {token, imageLogin, percentage} = useContext(UserContext)
     const dayjs = require('dayjs')
+    const weekday = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -20,7 +23,6 @@ export default function TodayScreen() {
         const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
         promise.then((response) => {
             setTasksToday(response.data)
-            console.log(tasksToday);
         });
         promise.catch(() => {
             alert("A conexão com o servidor foi perdida, faça o login novamente")
@@ -39,7 +41,7 @@ export default function TodayScreen() {
                 </Top>
                 <Content>
                     <DayWeeknd>
-                        <h2>{dayjs().day()}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
+                        <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
                         <p>Você não tem nenhum hábito planejado pra hoje</p>
                     </DayWeeknd>
                 </Content>
@@ -61,14 +63,34 @@ export default function TodayScreen() {
                 </Top>
                 <Content>
                     <DayWeeknd>
-                        <h2>Segunda, {dayjs().date()}/{dayjs().month()}</h2>
+                        <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
                         <p>Nenhum hábito concluído ainda</p>
                     </DayWeeknd>
                     <Tasks>
+                        {tasksToday.map((task, index) => <DailyTask key={index} habit={task.name} currentSequence={task.currentSequence} highestSequence={task.highestSequence} selected={task.done}/>)}
                     </Tasks>
                 </Content>
                 <Bottom>
-                    <p>Hábitos</p>
+                    <Click to="/habitos">
+                        <p>Hábitos</p>
+                    </Click>
+                    <Click to="/hoje">
+                        <ProgressBar
+                            value={percentage}
+                            text="Hoje"
+                            background={true}
+                            backgroundPadding={6}
+                            styles={buildStyles({
+                                backgroundColor: "#52B6FF",
+                                textColor: "white",
+                                pathColor: "white",
+                                trailColor: "transparent",
+                                textSize: "20px",
+                                strokeLinecap: "round",
+                                transform: "center center"
+                            })}
+                        />
+                    </Click>
                     <Click to="/historico">
                         <p>Histórico</p>
                     </Click>
@@ -114,8 +136,12 @@ const Top = styled.header `
 const Content = styled.div `
     display: flex;
     flex-direction: column;
-    align-items: center;
     margin-top: 70px;
+    margin-bottom: 90px;
+    max-width: 340px;
+    min-width: 270px;
+    margin-left: auto;
+    margin-right: auto;
 `;
 
 const DayWeeknd = styled.div `
@@ -123,17 +149,15 @@ const DayWeeknd = styled.div `
     display: flex;
     flex-direction: column;
     justify-content: center;
-    max-width: 340px;
-    min-width: 270px;
     h2 {
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 22px;
         line-height: 30px;
         color: #126BA5;
     }
     p {
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 18px;
         line-height: 22px;
@@ -141,11 +165,52 @@ const DayWeeknd = styled.div `
     }
 `;
 
-const Tasks = styled.div `
-    background-color: red;
-    height: 70px;
+const Tasks = styled.ul `
     max-width: 340px;
     min-width: 270px;
+    li{
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        min-height: 94px;
+        background: #FFFFFF;
+        border-radius: 5px;
+        box-sizing: border-box;
+        
+    }
+    ion-icon{
+        color: ${props => props.selected ? "#8FC549" : "#EBEBEB"};
+        font-size: 100px;
+        margin-top: auto;
+        margin-bottom: auto;
+    }
+    div{
+        max-width: 220px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        margin-top: 12px;
+        margin-bottom: 12px;
+        margin-left: 15px;
+        margin-right: 15px;
+        box-sizing: border-box;
+    }
+    h3{
+        font-family: "Lexend Deca";
+        font-weight: 400;
+        font-size: 20px;
+        line-height: 25px;
+        color: #666666;
+        margin-bottom: 6px;
+        word-wrap: break-word;
+    }
+    p{
+        font-family: "Lexend Deca";
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16px;
+        color: #666666;
+    }
 `;
 
 const Bottom = styled.footer `
@@ -159,14 +224,27 @@ const Bottom = styled.footer `
     align-items: center;
     justify-content: space-between;
     p {
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 18px;
         line-height: 22px;
         text-align: center;
         color: #52B6FF;
-        margin-left: 36px;
-        margin-right: 36px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+`;
+
+const ProgressBar = styled(CircularProgressbar)`
+    margin-bottom: 30px;
+    width: 90px;
+    height: 90px;
+    .CircularProgressbar-text {
+        transform: translate(-22px, 8px);
+        font-family: 'Lexend Deca';
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 22px;
     }
 `;
 

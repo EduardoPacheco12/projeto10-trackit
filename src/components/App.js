@@ -13,10 +13,11 @@ import UserContext from './Context/UserContext'
 export default function App() {
     const [token, setToken] = useState("")
     const [imageLogin, setImageLogin] = useState("")
+    const [percentage, setPercentage] = useState(25)
 
     //UI
     return( 
-        <UserContext.Provider value={{ token, setToken, imageLogin, setImageLogin }}>
+        <UserContext.Provider value={{ token, setToken, imageLogin, setImageLogin, percentage, setPercentage }}>
             <BrowserRouter>
                 <Routes>
                     <Route path="/" element={<LoginScreen />} />

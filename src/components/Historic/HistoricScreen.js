@@ -1,12 +1,14 @@
 import styled, { createGlobalStyle } from "styled-components";
-import { CircularProgressbar, CircularProgressbarWithChildren, buildStyles} from "react-circular-progressbar";
+import { CircularProgressbar, buildStyles} from "react-circular-progressbar";
 import { useState, useContext } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import UserContext from '../Context/UserContext'
 
 export default function HistoricScreen() {
-    const [percentage, setPercentage] = useState(25)
-    const {imageLogin} = useContext(UserContext)
+    //LOGIC
+    const {imageLogin, percentage} = useContext(UserContext)
+
+    //UI
     return (
         <>
             <GlobalStyle />
@@ -25,16 +27,19 @@ export default function HistoricScreen() {
                     <p>Hábitos</p>
                 </Click>
                 <Click to="/hoje">
-                    <CircularProgressbar
+                    <ProgressBar
                         value={percentage}
                         text="Hoje"
-                        background
+                        background={true}
                         backgroundPadding={6}
                         styles={buildStyles({
-                            backgroundColor: "#3E98C7",
-                            textColor: "#FFF",
-                            pathColor: "#FFF",
+                            backgroundColor: "#52B6FF",
+                            textColor: "white",
+                            pathColor: "white",
                             trailColor: "transparent",
+                            textSize: "20px",
+                            strokeLinecap: "round",
+                            transform: "center center"
                         })}
                     />
                 </Click>
@@ -46,6 +51,7 @@ export default function HistoricScreen() {
     )
 }
 
+//STYLE
 const GlobalStyle = createGlobalStyle`
   body {
     background-color: #E5E5E5;
@@ -65,7 +71,7 @@ const Top = styled.header `
     justify-content: space-between;
     h1 {
         margin-left: 18px;
-        font-family: 'Playball';
+        font-family: "Playball";
         font-weight: 400;
         font-size: 40px;
         line-height: 48px;
@@ -92,7 +98,7 @@ const Content = styled.div `
         padding-top: 28px;
         margin-left: 18px;
         margin-bottom: 18px;
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 22px;
         line-height: 29px;
@@ -101,7 +107,7 @@ const Content = styled.div `
     p {
         margin-left: 18px;
         margin-right: 18px;
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 17.976px;
         line-height: 22px;
@@ -120,7 +126,7 @@ const Bottom = styled.footer `
     align-items: center;
     justify-content: space-between;
     p {
-        font-family: 'Lexend Deca';
+        font-family: "Lexend Deca";
         font-weight: 400;
         font-size: 18px;
         line-height: 22px;
@@ -128,6 +134,19 @@ const Bottom = styled.footer `
         color: #52B6FF;
         margin-left: 36px;
         margin-right: 36px;
+    }
+`;
+
+const ProgressBar = styled(CircularProgressbar)`
+    margin-bottom: 30px;
+    width: 90px;
+    height: 90px;
+    .CircularProgressbar-text {
+        transform: translate(-22px, 8px);
+        font-family: "Lexend Deca";
+        font-weight: 400;
+        font-size: 18px;
+        line-height: 22px;
     }
 `;
 
