@@ -1,4 +1,7 @@
 import styled from "styled-components"
+import axios from "axios"
+import { useContext } from "react"
+import UserContext from "../Context/UserContext"
 
 function WordButton(props) {
     return(
@@ -11,6 +14,24 @@ function WordButton(props) {
 export default function GeneralTask(props) {
     //LOGIC
     const weekday = ["D", "S", "T", "Q", "Q", "S", "S"]
+    const {token} = useContext(UserContext)
+    function deleteHabit() {
+        const confirm = window.confirm("Deseja deletar esse hábito?")
+        if(confirm) {
+            const config = {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+            const promise = axios.delete(`https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${props.id}`, config)
+            promise.then(() => {
+                const request = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", config)
+                request.then(response => {
+                    props.setGeneralTasks(response.data)
+                })
+            })
+        }
+    }
     //UI
     return(  
         <Task>
@@ -18,7 +39,7 @@ export default function GeneralTask(props) {
             <ul>
                 {weekday.map((word, index) => <WordButton key={index} word={word} selected={props.days.some(day => day === index)}/>)}
             </ul>
-            <ion-icon name="trash-outline"></ion-icon>
+            <ion-icon onClick={deleteHabit} name="trash-outline"></ion-icon>
         </Task>
     )
 }

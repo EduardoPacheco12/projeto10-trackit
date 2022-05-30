@@ -19,7 +19,7 @@ function HabitsArray(props) {
     } else {
         return (
             <Tasks>
-                {props.generalTasks.map((task, index) => <GeneralTask key={index} days={task.days} name={task.name}/>)}
+                {props.generalTasks.map((task, index) => <GeneralTask setGeneralTasks={props.setGeneralTasks} key={index} id={task.id} days={task.days} name={task.name}/>)}
             </Tasks>
         )
     }
@@ -83,7 +83,7 @@ export default function HabitsScreen() {
                 </CreateHabit>
                 <Content>
                     {<AddForms add={add} setAdd={setAdd} setGeneralTasks={setGeneralTasks} generalTasks={generalTasks}/>}
-                    {<HabitsArray generalTasks={generalTasks}/>}
+                    {<HabitsArray generalTasks={generalTasks} setGeneralTasks={setGeneralTasks}/>}
                 </Content>
                 <Bottom>
                     <Click to="/habitos">

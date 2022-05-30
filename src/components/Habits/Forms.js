@@ -2,6 +2,7 @@ import { useState, useContext } from "react"
 import styled from "styled-components"
 import axios from "axios"
 import UserContext from '../Context/UserContext'
+import { ThreeDots } from  "react-loader-spinner"
 
 function WordButton(props) {
     //LOGIC
@@ -32,25 +33,31 @@ export default function Forms(props) {
     const weekday = ["D", "S", "T", "Q", "Q", "S", "S"]
     const [newHabit, setNewHabit] = useState("")
     const [days, setDays] = useState([])
+    const [loading, setLoading] = useState(false)
     const {token} = useContext(UserContext)
 
     function FinishHabit(e) {
         e.preventDefault()
-        const body = {
-            name: newHabit,
-            days: days
-        }
-        const config = {
-            headers: {
-                "Authorization": `Bearer ${token}`
+        if (days.length === 0) {
+            alert("Selecione algum dia da semana")
+        } else {
+            setLoading(true)
+            const body = {
+                name: newHabit,
+                days: days
             }
-        }
-        const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", body, config)
-        
-        promise.then((response) => {
-            props.setGeneralTasks([...props.generalTasks, response.data])
-            props.setAdd(false)
-        })
+            const config = {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+            const promise = axios.post("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits", body, config)
+            
+            promise.then((response) => {
+                props.setGeneralTasks([...props.generalTasks, response.data])
+                props.setAdd(false)
+            })
+        } 
     }
     //UI
     return (
@@ -59,7 +66,7 @@ export default function Forms(props) {
             <ul>
                 {weekday.map((word, index) => <WordButton key={index} day={index} word={word} days={days} setDays={setDays}/>)}
             </ul>
-            <Save type="submit">Salvar</Save>
+            {loading === true ? <Save type="submit"><ThreeDots color="#FFFFFF" height={30} width={30} /></Save> : <Save type="submit">Salvar</Save>}
             <Cancel type="button" onClick={(e) => {e.preventDefault(); props.setAdd(false)}}>Cancelar</Cancel>
         </Form>
     )
@@ -127,6 +134,9 @@ const Save = styled.button `
     height: 35px;
     background-color: #52B6FF;
     border: 1px solid #52B6FF;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border-radius: 5px;
     bottom: 16px;
     right: 16px;

@@ -3,16 +3,19 @@ import axios from 'axios'
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import logo from '../img/logo.png'
+import { ThreeDots } from  "react-loader-spinner"
 
 export default function RegisterScreen() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const [name, setName] = useState("")
     const [image, setImage] = useState("")
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate();
 
     function FinishRegister(e) {
         e.preventDefault();
+        setLoading(true)
         const body = {
             email,
             name,
@@ -26,6 +29,7 @@ export default function RegisterScreen() {
         })
         promise.catch( () => {
             alert("Esses dados já foram utilizados para cadastro")
+            setLoading(false)
             setEmail("")
             setPassword("")
             setName("")
@@ -40,11 +44,11 @@ export default function RegisterScreen() {
                 <h1>TrackIt</h1>
             </Logo>
             <Forms onSubmit={FinishRegister}>
-                <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
-                <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
-                <input type="text" placeholder="nome" onChange={(e) => setName(e.target.value)} value={name} required/>
-                <input type="url" placeholder="foto" onChange={(e) => setImage(e.target.value)} value={image} required/>
-                <button type="submit">Cadastrar</button>
+                <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} disabled={loading === true ? true : false} required/>
+                <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} minLength={3} disabled={loading === true ? true : false} required/>
+                <input type="text" placeholder="nome" onChange={(e) => setName(e.target.value)} value={name} disabled={loading === true ? true : false} required/>
+                <input type="url" placeholder="foto" onChange={(e) => setImage(e.target.value)} value={image} disabled={loading === true ? true : false} required/>
+                <button type="submit" disabled={loading === true ? true : false}>{loading === true ? <ThreeDots color="#FFFFFF" height={80} width={80} /> : "Cadastrar"}</button>
             </Forms>
             <Click to="/">
                 <BackLogin>Já tem uma conta? Faça login!</BackLogin>
@@ -114,6 +118,9 @@ const Forms = styled.form `
         font-size: 22px;
         line-height: 26px;
         text-align: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         color: #FFFFFF;
         &:hover {
             cursor: pointer;

@@ -37,41 +37,22 @@ export default function LoginScreen() {
     }
 
     //UI
-    if (loading === true) {
-        return(
-            <All>
-                <Logo>
-                    <img src={logo} alt="Logo da TrackIt" />
-                    <h1>TrackIt</h1>
-                </Logo>
-                <Forms onSubmit={FinishLogin}>
-                    <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
-                    <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
-                    <button type="submit"><ThreeDots color="#FFFFFF" height={80} width={80} /></button>
-                </Forms>
-                <Click to="/cadastro">
-                    <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
-                </Click>
-            </All>
-        );
-    } else {
-        return(
-            <All>
-                <Logo>
-                    <img src={logo} alt="Logo da TrackIt" />
-                    <h1>TrackIt</h1>
-                </Logo>
-                <Forms onSubmit={FinishLogin}>
-                    <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
-                    <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
-                    <button type="submit">Entrar</button>
-                </Forms>
-                <Click to="/cadastro">
-                    <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
-                </Click>
-            </All>
-        );
-    }
+    return(
+        <All>
+            <Logo>
+                <img src={logo} alt="Logo da TrackIt" />
+                <h1>TrackIt</h1>
+            </Logo>
+            <Forms onSubmit={FinishLogin}>
+                <input type="email" placeholder="email" disabled={loading === true ? true : false} onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                <input type="password" minLength={3} placeholder="senha" disabled={loading === true ? true : false} onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                <button type="submit" disabled={loading === true ? true : false}>{loading === true ? <ThreeDots color="#FFFFFF" height={80} width={80} /> : "Entrar"}</button>
+            </Forms>
+            <Click to="/cadastro">
+                <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
+            </Click>
+        </All>
+    );
 }
 
 //STYLE
