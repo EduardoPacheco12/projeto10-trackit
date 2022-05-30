@@ -2,7 +2,7 @@ import styled from "styled-components"
 
 function WordButton(props) {
     return(
-        <DayWeek>
+        <DayWeek selected={props.selected}>
             <p>{props.word}</p>
         </DayWeek>
     )
@@ -11,13 +11,12 @@ function WordButton(props) {
 export default function GeneralTask(props) {
     //LOGIC
     const weekday = ["D", "S", "T", "Q", "Q", "S", "S"]
-
     //UI
     return(  
         <Task>
             <h3>{props.name}</h3>
             <ul>
-                {weekday.map((word, index) => <WordButton key={index} word={word}/>)}
+                {weekday.map((word, index) => <WordButton key={index} word={word} selected={props.days.some(day => day === index)}/>)}
             </ul>
             <ion-icon name="trash-outline"></ion-icon>
         </Task>
@@ -59,7 +58,7 @@ const Task = styled.li `
 const DayWeek = styled.li `
     width: 30px;
     height: 30px;
-    background-color: #FFFFFF;
+    background-color: ${props => props.selected ? "#DBDBDB" : "#FFFFFF"};
     border: 1px solid #D5D5D5;
     border-radius: 5px;
     display: flex;
@@ -72,6 +71,6 @@ const DayWeek = styled.li `
         font-weight: 400;
         font-size: 20px;
         line-height: 25px;
-        color: #DBDBDB;
+        color: ${props => props.selected ? "#FFFFFF" : "#DBDBDB"};
     }
 `;

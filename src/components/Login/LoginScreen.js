@@ -4,16 +4,19 @@ import { useState, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import UserContext from '../Context/UserContext'
 import logo from '../img/logo.png'
+import { ThreeDots } from  "react-loader-spinner"
 
 export default function LoginScreen() {
     //LOGIC
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
+    const [loading, setLoading] = useState(false)
     const {setToken, setImageLogin} = useContext(UserContext)
     const navigate = useNavigate();
 
     function FinishLogin(e) {
         e.preventDefault();
+        setLoading(true)
         const body = {
             email,
             password
@@ -22,32 +25,53 @@ export default function LoginScreen() {
         promise.then( response => {
             setToken(response.data.token)
             setImageLogin(response.data.image)
+            setLoading(false)
             navigate("/hoje")
         })
         promise.catch(() => {
             alert("Não foi possível fazer o login, tente novamente.")
+            setLoading(false);
             setEmail("")
             setPassword("")
         })
     }
 
     //UI
-    return(
-        <All>
-            <Logo>
-                <img src={logo} alt="Logo da TrackIt" />
-                <h1>TrackIt</h1>
-            </Logo>
-            <Forms onSubmit={FinishLogin}>
-                <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
-                <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
-                <button type="submit">Entrar</button>
-            </Forms>
-            <Click to="/cadastro">
-                <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
-            </Click>
-        </All>
-    );
+    if (loading === true) {
+        return(
+            <All>
+                <Logo>
+                    <img src={logo} alt="Logo da TrackIt" />
+                    <h1>TrackIt</h1>
+                </Logo>
+                <Forms onSubmit={FinishLogin}>
+                    <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                    <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                    <button type="submit"><ThreeDots color="#FFFFFF" height={80} width={80} /></button>
+                </Forms>
+                <Click to="/cadastro">
+                    <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
+                </Click>
+            </All>
+        );
+    } else {
+        return(
+            <All>
+                <Logo>
+                    <img src={logo} alt="Logo da TrackIt" />
+                    <h1>TrackIt</h1>
+                </Logo>
+                <Forms onSubmit={FinishLogin}>
+                    <input type="email" placeholder="email" onChange={(e) => setEmail(e.target.value)} value={email} required/>
+                    <input type="password" placeholder="senha" onChange={(e) => setPassword(e.target.value)} value={password} required/>
+                    <button type="submit">Entrar</button>
+                </Forms>
+                <Click to="/cadastro">
+                    <BackRegister>Não tem uma conta? Cadastre-se!</BackRegister>
+                </Click>
+            </All>
+        );
+    }
 }
 
 //STYLE
@@ -92,7 +116,7 @@ const Forms = styled.form `
         font-size: 18px;
         line-height: 22px;
         color: #666666;    
-        padding-left: 10px; 
+        padding-left: 10px;
         ::-webkit-input-placeholder {
             font-family: 'Lexend Deca';
             font-weight: 400;
@@ -111,6 +135,9 @@ const Forms = styled.form `
         font-weight: 400;
         font-size: 22px;
         line-height: 26px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
         text-align: center;
         color: #FFFFFF;
         &:hover {

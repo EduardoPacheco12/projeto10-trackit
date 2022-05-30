@@ -7,7 +7,6 @@ import UserContext from '../Context/UserContext'
 export default function HistoricScreen() {
     //LOGIC
     const {imageLogin, percentage} = useContext(UserContext)
-
     //UI
     return (
         <>

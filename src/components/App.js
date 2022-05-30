@@ -13,7 +13,7 @@ import UserContext from './Context/UserContext'
 export default function App() {
     const [token, setToken] = useState("")
     const [imageLogin, setImageLogin] = useState("")
-    const [percentage, setPercentage] = useState(25)
+    const [percentage, setPercentage] = useState(0)
 
     //UI
     return( 

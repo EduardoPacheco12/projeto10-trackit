@@ -5,13 +5,41 @@ import { useState, useEffect, useContext } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import UserContext from '../Context/UserContext'
 import DailyTask from './DailyTask'
+import { TailSpin } from  "react-loader-spinner"
+
+function TodayArray(props) {
+    //LOGIC
+    const dayjs = require('dayjs')
+    const weekday = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]
+    //UI
+    if (props.tasksToday.length === 0) {
+        return(
+            <DayWeeknd>
+                <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
+                <p>Você não tem nenhum hábito planejado pra hoje</p>
+            </DayWeeknd>
+        )
+    } else {
+        return(
+            <>
+                <DayWeeknd>
+                    <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
+                    <p>Nenhum hábito concluído ainda</p>
+                </DayWeeknd>
+                <Tasks>
+                    {props.tasksToday.map((task, index) => <DailyTask key={index} habit={task.name} currentSequence={task.currentSequence} highestSequence={task.highestSequence} selected={task.done}/>)}
+                </Tasks>
+            </>
+        )
+    }
+
+}
 
 export default function TodayScreen() {
     //LOGIC
     const [tasksToday, setTasksToday] = useState([])
+    const [loading, setLoading] = useState(true)
     const {token, imageLogin, percentage} = useContext(UserContext)
-    const dayjs = require('dayjs')
-    const weekday = ["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"]
     const navigate = useNavigate()
 
     useEffect(() => {
@@ -23,6 +51,7 @@ export default function TodayScreen() {
         const promise = axios.get("https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today", config);
         promise.then((response) => {
             setTasksToday(response.data)
+            setLoading(false)
         });
         promise.catch(() => {
             alert("A conexão com o servidor foi perdida, faça o login novamente")
@@ -31,27 +60,11 @@ export default function TodayScreen() {
     }, []);
 
     //UI
-    if (tasksToday.length === 0) {
-        return(
-            <>
-                <GlobalStyle />
-                <Top>
-                    <h1>TrackIt</h1>
-                    <img src={imageLogin} alt="Icone de perfil" />
-                </Top>
-                <Content>
-                    <DayWeeknd>
-                        <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
-                        <p>Você não tem nenhum hábito planejado pra hoje</p>
-                    </DayWeeknd>
-                </Content>
-                <Bottom>
-                    <p>Hábitos</p>
-                    <Click to="/historico">
-                        <p>Histórico</p>
-                    </Click>
-                </Bottom>
-            </>
+    if( loading === true) {
+        return (
+            <Loading>
+                <TailSpin color="#52B6FF" height={80} width={80} />
+            </Loading>
         )
     } else {
         return(
@@ -62,13 +75,7 @@ export default function TodayScreen() {
                     <img src={imageLogin} alt="Icone de perfil" />
                 </Top>
                 <Content>
-                    <DayWeeknd>
-                        <h2>{weekday[dayjs().day()]}, {dayjs().locale('pt-br').date()}/0{dayjs().locale('pt-br').month() + 1}</h2>
-                        <p>Nenhum hábito concluído ainda</p>
-                    </DayWeeknd>
-                    <Tasks>
-                        {tasksToday.map((task, index) => <DailyTask key={index} habit={task.name} currentSequence={task.currentSequence} highestSequence={task.highestSequence} selected={task.done}/>)}
-                    </Tasks>
+                    {<TodayArray tasksToday={tasksToday}/>} 
                 </Content>
                 <Bottom>
                     <Click to="/habitos">
@@ -97,7 +104,7 @@ export default function TodayScreen() {
                 </Bottom>
             </>
         )
-    }  
+    }
 }
 
 const GlobalStyle = createGlobalStyle`
@@ -117,6 +124,7 @@ const Top = styled.header `
     display: flex;
     align-items: center;
     justify-content: space-between;
+    z-index: 1;
     h1 {
         margin-left: 18px;
         font-family: 'Playball';
@@ -211,6 +219,12 @@ const Tasks = styled.ul `
         line-height: 16px;
         color: #666666;
     }
+`;
+
+const Loading = styled.div `
+    display: flex;
+    justify-content: center;
+    margin-top: 300px;
 `;
 
 const Bottom = styled.footer `

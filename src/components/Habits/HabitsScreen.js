@@ -6,14 +6,43 @@ import UserContext from '../Context/UserContext'
 import Forms from "./Forms";
 import GeneralTask from "./GeneralTask"
 import axios from "axios"
-import { ThreeDots } from  "react-loader-spinner"
+import { TailSpin } from  "react-loader-spinner"
+
+function HabitsArray(props) {
+    //UI
+    if (props.generalTasks.length === 0) {
+        return(
+            <Message>
+                <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+            </Message>
+        )
+    } else {
+        return (
+            <Tasks>
+                {props.generalTasks.map((task, index) => <GeneralTask key={index} days={task.days} name={task.name}/>)}
+            </Tasks>
+        )
+    }
+}
+
+function AddForms(props) {
+    if(props.add === true) {
+        return(
+            <Forms setAdd={props.setAdd} generalTasks={props.generalTasks} setGeneralTasks={props.setGeneralTasks}/>
+        )
+    } else {
+        return null;
+    }
+}
 
 export default function HabitsScreen() {
     //LOGIC
     const {imageLogin, percentage, token} = useContext(UserContext)
     const [generalTasks, setGeneralTasks] = useState([])
-    const navigate = useNavigate()
+    const [add, setAdd] = useState(false)
     const [loading, setLoading] = useState(true)
+    const navigate = useNavigate()
+    
     useEffect(() => {
         const config = {
             headers: {
@@ -35,108 +64,56 @@ export default function HabitsScreen() {
     if(loading === true) {
         return (
             <Loading>
-                <ThreeDots color="#00BFFF" height={80} width={80} />
+                <TailSpin color="#52B6FF" height={80} width={80} />
             </Loading>
         )
     } else {
-        if (generalTasks.length === 0) {
-            return (
-                <>
-                    <GlobalStyle />
-                    <Top>
-                        <h1>TrackIt</h1>
-                        <img src={imageLogin} alt="Icone de perfil" />
-                    </Top>
-                    <CreateHabit>
-                        <h2>Meus hábitos</h2>
-                        <div>
-                            <ion-icon name="add-sharp"></ion-icon>
-                        </div>
-                    </CreateHabit>
-                    <Content>
-                        {/* <Forms /> */}
-                        <Message>
-                            <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
-                        </Message>
-                    </Content>
-                    <Bottom>
-                        <Click to="/habitos">
-                            <p>Hábitos</p>
-                        </Click>
-                        <Click to="/hoje">
-                            <ProgressBar
-                                value={percentage}
-                                text="Hoje"
-                                background={true}
-                                backgroundPadding={6}
-                                styles={buildStyles({
-                                    backgroundColor: "#52B6FF",
-                                    textColor: "white",
-                                    pathColor: "white",
-                                    trailColor: "transparent",
-                                    textSize: "20px",
-                                    strokeLinecap: "round",
-                                    transform: "center center"
-                                })}
-                            />
-                        </Click>
-                        <Click to="/historico">
-                            <p>Histórico</p>
-                        </Click>
-                    </Bottom>
-                </>
-            )
-        } else {
-            return(
-                <>
-                    <GlobalStyle />
-                    <Top>
-                        <h1>TrackIt</h1>
-                        <img src={imageLogin} alt="Icone de perfil" />
-                    </Top>
-                    <CreateHabit>
-                        <h2>Meus hábitos</h2>
-                        <div>
-                            <ion-icon name="add-sharp"></ion-icon>
-                        </div>
-                    </CreateHabit>
-                    <Content>
-                        {/* <Forms /> */}
-                        <Tasks>
-                            {generalTasks.map((task, index) => <GeneralTask key={index} name={task.name}/>)}
-                        </Tasks>
-                    </Content>
-                    <Bottom>
-                        <Click to="/habitos">
-                            <p>Hábitos</p>
-                        </Click>
-                        <Click to="/hoje">
-                            <ProgressBar
-                                value={percentage}
-                                text="Hoje"
-                                background={true}
-                                backgroundPadding={6}
-                                styles={buildStyles({
-                                    backgroundColor: "#52B6FF",
-                                    textColor: "white",
-                                    pathColor: "white",
-                                    trailColor: "transparent",
-                                    textSize: "20px",
-                                    strokeLinecap: "round",
-                                    transform: "center center"
-                                })}
-                            />
-                        </Click>
-                        <Click to="/historico">
-                            <p>Histórico</p>
-                        </Click>
-                    </Bottom>
-                </>
-            )
-        }  
+        return (
+            <>
+                <GlobalStyle />
+                <Top>
+                    <h1>TrackIt</h1>
+                    <img src={imageLogin} alt="Icone de perfil" />
+                </Top>
+                <CreateHabit>
+                    <h2>Meus hábitos</h2>
+                    <div onClick={() => setAdd(true)}>
+                        <ion-icon name="add-sharp"></ion-icon>
+                    </div>
+                </CreateHabit>
+                <Content>
+                    {<AddForms add={add} setAdd={setAdd} setGeneralTasks={setGeneralTasks} generalTasks={generalTasks}/>}
+                    {<HabitsArray generalTasks={generalTasks}/>}
+                </Content>
+                <Bottom>
+                    <Click to="/habitos">
+                        <p>Hábitos</p>
+                    </Click>
+                    <Click to="/hoje">
+                        <ProgressBar
+                            value={percentage}
+                            text="Hoje"
+                            background={true}
+                            backgroundPadding={6}
+                            styles={buildStyles({
+                                backgroundColor: "#52B6FF",
+                                textColor: "white",
+                                pathColor: "white",
+                                trailColor: "transparent",
+                                textSize: "20px",
+                                strokeLinecap: "round",
+                                transform: "center center"
+                            })}
+                        />
+                    </Click>
+                    <Click to="/historico">
+                        <p>Histórico</p>
+                    </Click>
+                </Bottom>
+            </>
+        ) 
     }
 }
-    
 
 //STYLE
 const GlobalStyle = createGlobalStyle`
@@ -252,7 +229,7 @@ const Bottom = styled.footer `
 const Loading = styled.div `
     display: flex;
     justify-content: center;
-    align-items: center;
+    margin-top: 300px;
 `;
 
 const ProgressBar = styled(CircularProgressbar)`
